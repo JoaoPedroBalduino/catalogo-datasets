@@ -1,0 +1,81 @@
+body {
+  background: #181a1b;
+  font-family: Consolas, monospace;
+  color: #e0e0e0;
+  display: flex;
+  gap: 32px;
+  padding: 40px;
+  min-height: 100vh;
+}
+
+.retro-window {
+  background: #232629;
+  color: #e0e0e0;
+  border: 2px solid #555;
+  min-height: 160px;
+  margin-bottom: 24px;
+  box-shadow: 6px 5px 12px #0008;
+}
+
+.retro-title-bar {
+  background: #313338;
+  color: #fff;
+  font-weight: bold;
+  padding: 4px 10px;
+  font-size: 15px;
+  border-bottom: 2px solid #444;
+  text-shadow: 1px 1px #0005;
+  letter-spacing: 1px;
+}
+
+.retro-content {
+  padding: 10px;
+}
+
+ul {
+  list-style: none;
+  margin: 0 0 8px 0;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 3px;
+  border-bottom: 1px solid #34373b;
+  padding-bottom: 3px;
+  font-size: 14px;
+}
+
+form {
+  margin-top: 7px;
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+input {
+  background: #202225;
+  border: 1px solid #444;
+  color: #eee;
+  padding: 2px 5px;
+  font-family: inherit;
+  font-size: 13px;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+button {
+  background: #282828;
+  border: 1px solid #444;
+  color: #a3a3a3;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 13px;
+  border-radius: 0;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #444;
+  color: #fff;
+}

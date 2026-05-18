@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Catálogo de Datasets - Retro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      background: #232629;
+      font-family: Consolas, monospace;
+      color: #e0e0e0;
+      min-height: 100vh;
+      margin: 0;
+      /* Centralização flexbox */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .main-retro-layout {
+      display: flex;
+      gap: 48px;
+      align-items: flex-start;
+    }
+    .retro-window {
+      background: #1b1c1e;
+      color: #e0e0e0;
+      border: 2px solid #707070;
+      min-height: 280px;
+      box-shadow: none;
+      width: 350px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .retro-title-bar {
+      background: #2d2f34;
+      color: #eee;
+      font-weight: bold;
+      padding: 4px 8px;
+      font-size: 16px;
+      border-bottom: 2px solid #707070;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 28px;
+    }
+    .retro-content {
+      padding: 10px 10px 18px 10px;
+      flex: 1;
+    }
+    ul {
+      list-style: none;
+      margin: 0 0 8px 0;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 2px;
+      border-bottom: 1px solid #393c3f;
+      padding-bottom: 3px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cat-content, .ds-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    form {
+      margin-top: 9px;
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+    input {
+      background: #181a1b;
+      border: 1px solid #444;
+      color: #eee;
+      padding: 2.5px 7px;
+      font-family: inherit;
+      font-size: 13px;
+      border-radius: 0;
+    }
+    input:focus {
+      outline: 1.5px solid #58aeff;
+      background: #232629;
+    }
+    button {
+      background: #232629;
+      border: 1px solid #707070;
+      color: #a3a3a3;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 2.5px 13px;
+      border-radius: 0;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #444b;
+      color: #fff;
+    }
+    .small-btn {
+      background: #232629;
+      color: #ff6040;
+      border: 1.5px solid #7f3535;
+      font-size: 15px;
+      padding: 0 8px 0 8px;
+      margin-left: 6px;
+      margin-right: 2px;
+      border-radius: 0;
+      min-width: 23px;
+    }
+    .small-btn.ds {
+      color: #ff6040;
+      border-color: #7f3535;
+    }
+    .small-btn.edit-btn {
+      color: #FFD700!important;
+      border-color: #A49A4A;
+    }
+    .small-btn:hover {
+      background: #323b32;
+      color: #c7ffe1;
+      border-color: #43b95b;
+    }
+    .small-btn.ds:hover {
+      background: #3a2827;
+      color: #ffd6c4;
+      border-color: #e25838;
+    }
+    .small-btn.edit-btn:hover {
+      background: #484019;
+      color: #fffad8!important;
+      border-color: #FFD700;
+    }
+    .fonte {
+      margin-top: 3px;
+      font-size: 12.5px;
+      overflow-wrap: anywhere;
+    }
+    .fonte a { color:#4cc3ff; }
+  </style>
+</head>
+<body>
+<div class="main-retro-layout">
+  <!-- CATEGORIAS -->
+  <div class="retro-window">
+    <div class="retro-title-bar">Categorias</div>
+    <div class="retro-content">
+      <ul id="categorias-list"></ul>
+      <form id="categoria-form" autocomplete="off">
+        <input id="nova-categoria" type="text" placeholder="Nova categoria" required/>
+        <button type="submit">Adicionar</button>
+      </form>
+    </div>
+  </div>
+  <!-- DATASETS -->
+  <div class="retro-window">
+    <div class="retro-title-bar">Datasets</div>
+    <div class="retro-content">
+      <ul id="datasets-list"></ul>
+      <form id="dataset-form" autocomplete="off">
+        <input id="nome-dataset" type="text" placeholder="Nome" required style="width:90px;"/>
+        <input id="descricao-dataset" type="text" placeholder="Descrição" required style="width:120px;"/>
+        <input id="fonte-dataset" type="text" placeholder="Fonte (URL ou texto)" style="width:120px;"/>
+        <input id="categoria-id-dataset" type="number" placeholder="ID categ" required style="width:50px;"/>
+        <button type="submit">Adicionar</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+//local do back
+const API = "http://localhost:3000"; // Ajuste se o backend não estiver nesse endereço
+
+//Categorias
+const categoriasList = document.getElementById('categorias-list');
+const categoriaForm = document.getElementById('categoria-form');
+const novaCategoria = document.getElementById('nova-categoria');
+
+async function carregarCategorias() {
+  const res = await fetch(`${API}/categorias`);
+  const categorias = await res.json();
+  categoriasList.innerHTML = '';
+  categorias.forEach(cat => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span class="cat-content">
+        <b>${cat.id}</b>: <span class="cat-nome">${cat.nome}</span>
+      </span>
+      <span>
+        <button class="small-btn edit-btn" title="Editar categoria">🖍</button>
+        <button data-id="${cat.id}" class="small-btn" title="Deletar categoria">×</button>
+      </span>
+    `;
+    //para remover as categorias 
+    li.querySelector('.small-btn:not(.edit-btn)').onclick = async () => {
+      await fetch(`${API}/categorias/${cat.id}`, { method: "DELETE" });
+      carregarCategorias();
+      carregarDatasets();
+    };
+    //editar as categrias
+    li.querySelector('.edit-btn').onclick = async () => {
+      const novoNome = prompt("Novo nome para a categoria:", cat.nome);
+      if (novoNome && novoNome !== cat.nome) {
+        await fetch(`${API}/categorias/${cat.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome: novoNome })
+        });
+        carregarCategorias();
+      }
+    };
+    categoriasList.appendChild(li);
+  });
+}
+
+categoriaForm.onsubmit = async (e) => {
+  e.preventDefault();
+  await fetch(`${API}/categorias`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nome: novaCategoria.value })
+  });
+  novaCategoria.value = '';
+  carregarCategorias();
+};
+
+//Datasets
+const datasetsList = document.getElementById('datasets-list');
+const datasetForm = document.getElementById('dataset-form');
+const nomeDataset = document.getElementById('nome-dataset');
+const descricaoDataset = document.getElementById('descricao-dataset');
+const fonteDataset = document.getElementById('fonte-dataset');
+const categoriaIdDataset = document.getElementById('categoria-id-dataset');
+
+async function carregarDatasets() {
+  const res = await fetch(`${API}/datasets`);
+  const datasets = await res.json();
+  datasetsList.innerHTML = '';
+  datasets.forEach(ds => {
+    const li = document.createElement('li');
+    //condição que fiz para se ter erro no link só mostrar texto (fui testa com um link e deu esse problema)
+    let fonteHtml = "";
+    if (ds.fonte_url) {
+      if (ds.fonte_url.match(/^https?:\/\//i)) {
+        fonteHtml = `<div class="fonte"><span style="color:#7cdfd8;">Fonte:</span> <a href="${ds.fonte_url}" target="_blank">${ds.fonte_url}</a></div>`;
+      } else {
+        fonteHtml = `<div class="fonte"><span style="color:#7cdfd8;">Fonte:</span> ${ds.fonte_url}</div>`;
+      }
+    }
+    li.innerHTML = `
+      <span class="ds-content">
+        <b>${ds.id}</b>: <span class="ds-nome">${ds.nome}</span><br>
+        <i class="ds-desc">${ds.descricao}</i>
+        ${fonteHtml}
+        <span style="color:#9ff;font-size:11px;">[cat:${ds.categoria_id}]</span>
+      </span>
+      <span>
+        <button class="small-btn edit-btn ds" title="Editar dataset">🖍</button>
+        <button data-id="${ds.id}" class="small-btn ds" title="Deletar dataset">×</button>
+      </span>
+    `;
+    //remove o dataset
+    li.querySelector('.small-btn.ds:not(.edit-btn)').onclick = async () => {
+      await fetch(`${API}/datasets/${ds.id}`, { method: "DELETE" });
+      carregarDatasets();
+    };
+    // EDITAR dataset
+    li.querySelector('.edit-btn.ds').onclick = async () => {
+      const novoNome = prompt("Novo nome:", ds.nome);
+      if (!novoNome) return;
+      const novaDesc = prompt("Nova descrição:", ds.descricao);
+      if (novaDesc === null) return;
+      const novaFonte = prompt("Nova fonte (URL ou texto):", ds.fonte_url || "");
+      if (novaFonte === null) return;
+      const novaCatId = prompt("Novo ID categoria:", ds.categoria_id);
+      if (!novaCatId) return;
+      await fetch(`${API}/datasets/${ds.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome: novoNome,
+          descricao: novaDesc,
+          fonte_url: novaFonte,
+          categoria_id: Number(novaCatId)
+        })
+      });
+      carregarDatasets();
+    };
+    datasetsList.appendChild(li);
+  });
+}
+
+datasetForm.onsubmit = async (e) => {
+  e.preventDefault();
+  await fetch(`${API}/datasets`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      nome: nomeDataset.value,
+      descricao: descricaoDataset.value,
+      fonte_url: fonteDataset.value,
+      categoria_id: Number(categoriaIdDataset.value)
+    })
+  });
+  nomeDataset.value = '';
+  descricaoDataset.value = '';
+  fonteDataset.value = '';
+  categoriaIdDataset.value = '';
+  carregarDatasets();
+};
+
+carregarCategorias();
+carregarDatasets();
+</script>
+</body>
+</html>
