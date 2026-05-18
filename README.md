@@ -121,7 +121,7 @@ A seguir, prints das operações principais.
 
 ### Adicionar uma Categoria
 
-[![Adicionar uma categoria](prints/Adicionar_uma_categoria.png)](https://github.com/JoaoPedroBalduino/catalogo-datasets/blob/main/prints/Adicionar_uma_categoria.png)
+![Adicionar uma categoria](prints/Adicionar_uma_categoria.png)
 
 ---
 
